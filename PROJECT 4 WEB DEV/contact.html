@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNITA TOURS - Contact Us</title>
+    <link rel="stylesheet" href="Project4.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h1 class="logo">UNITA TOURS</h1>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="tours.html">Tours</a></li>
+            <li><a href="explore.html">Explore</a></li>
+            <li><a href="about.html">About</a></li>
+            <li class="active"><a href="contact.html">Contact</a></li>
+        </ul>
+        <button class="menu-btn">Menu</button>
+    </nav>
+    
+    <section class="contact">
+        <div class="contact-content">
+            <h1>Contact Us</h1>
+            <div class="line"></div>
+            <p>We'd love to hear from you! If you have any questions, inquiries, or feedback, please feel free to get in touch with our team.</p>
+        </div>
+        <div class="contact-form">
+            <h2>Get in Touch</h2>
+            <form>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required placeholder="Your Name">
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required placeholder="Your Email">
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="4" required placeholder="Your Message"></textarea>
+
+                <button type="submit" class="ctn">Submit</button>
+            </form>
+        </div>
+        <br>
+        <div class="book-tour-form">
+            <form action="thanks.html" method="post">
+                <h1>BOOK A TOUR</h1>
+                <label for="tour-name">Tour Name:</label>
+                <input type="text" id="tour-name" name="tour-name" required placeholder="Enter Tour Name">
+    
+                <label for="tour-date">Tour Date:</label>
+                <input type="date" id="tour-date" name="tour-date" required>
+    
+                <label for="participants">Number of Participants:</label>
+                <input type="number" id="participants" name="participants" required min="1" placeholder="Enter Number of Participants">
+    
+                <button type="submit" class="ctn">Book Now</button>
+            </form>
+            <!-- <div class="thank-you">
+                <div class="thank-you" style="display: block;">
+                    <h3>Thank You!</h3>
+                    <p>Your tour booking has been submitted successfully. We'll be in touch soon.</p>
+                </div> -->
+        </div>
+         
+            
+        </div>
+    </section>
+    
+    <section class="footer">
+        <p>63 Oduduwa Street, Governor's Road, Ikotun, Lagos, Nigeria | Phone: 204-872-8944 | Email: Unitatours@gmail.com</p>
+        <p>&copy; 2023 Unita Tours</p>
+    </section>
+
+
+    <script src="Project4.js" defer></script>
+</body>
+</html>
