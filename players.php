@@ -4,7 +4,8 @@
  * Date: 20th Sep. 2023 
  * Description: The project is a simple blogging application 
  **************/
-
+// Start the session
+session_start();
 require('connect.php');
 include 'header.php'; 
 ?>
@@ -20,8 +21,11 @@ include 'header.php';
     <div class="row">
         <?php
         try {
-            // Prepare the SQL statement without sorting
-            $stmt = $db->prepare("SELECT * FROM football_legends");
+             // Prepare the SQL statement with a JOIN to fetch category (position) information
+            $stmt = $db->prepare("SELECT fl.*, c.position 
+            FROM football_legends fl
+            JOIN categories c ON fl.category_id = c.id");
+
 
             // Execute the statement
             $stmt->execute();
@@ -47,13 +51,7 @@ include 'header.php';
                 echo '<br>';
                 echo '<hr>';
 
-                // // Add delete and edit buttons
-                // if ($_SESSION['role'] == 1) {
-                //     echo '<div class="edit-delete-buttons">';
-                //     echo '<a href="delete.php?name=' . urlencode($player['first_name']) . '" class="btn btn-danger">Delete</a>';
-                //     echo '<a href="edit_lege.php?player_id=' . urlencode($player['player_id']) . '" class="btn btn-secondary">Edit</a>';
-                //     echo '</div>';
-                // }
+
 
                 echo '</div>';
                 echo '</div>';

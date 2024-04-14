@@ -1,23 +1,18 @@
 <?php
-/************
 
-    Name: oriooooooooooooooooooo
-    Date: 20th Sep. 2023
-    Description: The project is a simple blogging application
-
-************/
 session_start();
 require('connect.php');
 include 'header.php';
 
 // Check if the user is logged in
-if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-    $welcomeMessage = "Welcome, " . $_SESSION["name"] . "!";
-} else {
-    // If not logged in, redirect to the login page
-    header("location: login.php");
-    exit();
-}
+// if (isset($_SESSION["loggedin"]) && 
+// if (isset($_SESSION["loggedin"]) === true) {
+//     $welcomeMessage = "Welcome, " . $_SESSION["name"] . "!";
+// } else {
+//     // If not logged in, redirect to the login page
+//     header("location: login.php");
+//     exit();
+// }
 
 // Check if a search term is provided
 if (isset($_GET['search']) && !empty($_GET['search'])) {
@@ -56,7 +51,7 @@ $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <p>Discover exclusive insights and tributes to the football heroes who shaped the game.</p>
         <a class="btn btn-light btn-lg" href="players.php" role="button">Read Legends' Stories</a>
     </div>
-    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+    <!-- <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
   <ol class="carousel-indicators">
     <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
     <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
@@ -93,7 +88,7 @@ $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="sr-only">Next</span>
   </a>
-</div>
+</div> -->
 
 
     <!-- Featured Legends Section -->
@@ -116,8 +111,57 @@ $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </form>
     </nav>
 
-    <a href="players.php">explore the legends here</a>
+    
+    <div class="row">
+        <?php
+        try {
+             // Prepare the SQL statement with a JOIN to fetch category (position) information
+            $stmt = $db->prepare("SELECT *
+            FROM football_legends fl
+           ");
+
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Fetch all the players' data
+            $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Loop through each player and display their data
+            foreach ($players as $player) {
+                echo '<div class="col-md-4 mb-4">';
+                echo '<div class="card">';
+
+                // Use a placeholder image or a default image URL
+                // $imageUrl = isset($player['image']) ? $player['image'] : 'https://placeimg.com/300/200/sports';
+                // You can also display the player's image here using the image URL stored in the database
+        $imageUrl = $player['images'] ?? 'https://placeimg.com/300/200/sports';
+        // echo '<img src="' . $imageUrl . '" alt="' . $player['first_name'] . '">';
+
+        echo '<img src="' . $imageUrl . '" class="card-img-top" alt="' . $player['first_name'] . '">';
+        echo '<div class="card-body">';
+        echo '<h5 class="card-title"><a href="player_details.php?id=' . $player['player_id'] . '">' . $player['first_name'] . ' ' . $player['last_name'] . '</a></h5>';
+        // echo '<p class="card-text">' . $player['position'] . '</p>';
+        // echo '<p class="card-text">Goals: ' . $player['goals'] . '</p>';
+        // echo '<p class="card-text">Appearances: ' . $player['appearances'] . '</p>';
+        echo '<br>';
+        echo '<hr>';
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+            }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        ?>
+    </div>
 
 </body>
+<footer style="background-color: #f8f9fa; padding: 20px; text-align: center;">
+    <p>© 2023 T-Soccer Blog. All rights reserved.</p>
+    <p><a href="aboutus.php">About Us</a> | <a href="contactus.php">Contact Us</a></p>
+
+
+  </footer>
 
 </html>

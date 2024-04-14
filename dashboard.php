@@ -39,6 +39,7 @@ if(isset($_GET['column']) && in_array($_GET['column'], array('user_id', 'name', 
 
 $sql = "SELECT * FROM user ORDER BY " . $sort_column . " " . $sort_order;
 $result = $db->query($sql);
+$row = $result->fetch(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -51,13 +52,25 @@ $result = $db->query($sql);
     <title>Dashboard</title>
 </head>
 <body>
+
+
     
     <h1 class="text-center">Dashboard</h1>
-    <div class="container mt-5">
+    <!-- <div class="container mt-5">
+
+    <div class="form-outline mb-4">
+    <form method="post"  action="create_category.php" >
+        <h5 class="text-center">Create category</h5>
+    <label for="categoryName">Category Name:</label>
+    <input class="form-control" type="text" name="position" required>
+    <br>
+    <button type="submit" class="btn btn-primary">Submit </button>
+</form>
+</div> -->
         <div class="row">
             <div class="sort mt-3 mb-4">
                 <!-- Sorting Form Container -->
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                     <form class="form-inline" method="get" action="">
                         <label class="mr-2" for="sort">Sort by:</label>
                         <select class="form-control mr-2" name="sort" id="sort">
@@ -75,7 +88,7 @@ $result = $db->query($sql);
                         </select>
                         <button type="submit" class="btn btn-secondary mr-2">Sort</button>
                     </form>
-                </div>
+                </div> -->
             </div>
 
             <div class="container mt-5">
@@ -105,7 +118,7 @@ $result = $db->query($sql);
                                 echo "<td>" . $row["email"] . "</td>";
                                 echo "<td>" . ($row["role"] == 1 ? "Admin" : "User") . "</td>";
                                 echo "<td>" . $row["date"] . "</td>";
-                                echo "<td>" . $row["password"] . "</td>"; // Display hashed password
+                                // echo "<td>" . $row["password"] . "</td>"; // Display hashed password
                                 echo "<td>
                                         <a href='edit_user.php?id=" . $row["user_id"] . "' class='btn btn-primary btn-sm'>Update</a>
                                         <a href='delete_user.php?id=" . $row["user_id"] . "' class='btn btn-danger btn-sm'>Delete</a>
@@ -160,7 +173,7 @@ $legends_result = $db->query($legends_sql);
                         echo "<td>" . $legend_row["player_id"] . "</td>";
                         echo "<td>" . $legend_row["first_name"] . "</td>";
                         echo "<td>" . $legend_row["last_name"] . "</td>";
-                        echo "<td>" . $legend_row["position"] . "</td>";
+                        echo "<td>" . $legend_row["category_id"] . "</td>";
                         echo "<td>" . $legend_row["goals"] . "</td>";
                         echo "<td>" . $legend_row["appearances"] . "</td>";
                         echo "<td>" . $legend_row["created_at"] . "</td>";
@@ -179,6 +192,119 @@ $legends_result = $db->query($legends_sql);
             </tbody>
         </table>
     </div>
+
+    <div class="container mt-5">
+    <?php
+    try {
+        // Fetch all categories
+        $categoriesStmt = $db->prepare("SELECT * FROM categories");
+        $categoriesStmt->execute();
+        $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Loop through each category
+        foreach ($categories as $category) {
+
+            $category_sort_order = isset($_GET['order_dir']) ? $_GET['order_dir'] : 'ASC';
+            
+            echo '<h2 class="text-center">' . $category['position'] . '</h2>';
+            echo '<div class="table-responsive">';
+            echo '<table class="table table-bordered">';
+            echo '<thead>';
+            echo '<tr>';
+            echo '<th><a href="?category_id=' . $category['id'] . '&order_by=first_name&order_dir=' . ($category_sort_order == 'ASC' ? 'DESC' : 'ASC') . '">Name</a></th>';
+            echo '<th><a href="?category_id=' . $category['id'] . '&order_by=position&order_dir=' . ($category_sort_order == 'ASC' ? 'DESC' : 'ASC') . '">Position</a></th>';
+            echo '<th><a href="?category_id=' . $category['id'] . '&order_by=goals&order_dir=' . ($category_sort_order == 'ASC' ? 'DESC' : 'ASC') . '">Goals</a></th>';
+            echo '<th><a href="?category_id=' . $category['id'] . '&order_by=appearances&order_dir=' . ($category_sort_order == 'ASC' ? 'DESC' : 'ASC') . '">Appearances</a></th>';
+            // echo '<th>Actions</th>';
+            // echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+
+            // Prepare the SQL statement to fetch players by category with sorting
+            $order_by = isset($_GET['order_by']) ? $_GET['order_by'] : 'first_name';
+            $order_dir = isset($_GET['order_dir']) ? $_GET['order_dir'] : 'ASC';
+            
+            $playersStmt = $db->prepare("SELECT fl.*, c.position 
+                                         FROM football_legends fl
+                                         JOIN categories c ON fl.category_id = c.id
+                                         WHERE fl.category_id = :category_id
+                                         ORDER BY $order_by $order_dir");
+            $playersStmt->bindParam(':category_id', $category['id']);
+            $playersStmt->execute();
+            $players = $playersStmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Loop through each player in the category and display their data in a table row
+            foreach ($players as $player) {
+
+                echo '<td>';
+                echo '<a href="delete_category.php?id=' . urlencode($category['id']) . '" class="btn btn-danger">Delete</a>';
+                echo '</td>';
+                echo '<tr>';
+                echo '<td>' . $player['first_name'] . ' ' . $player['last_name'] . '</td>';
+                echo '<td>' . $player['category_id'] . '</td>';
+                echo '<td>' . $player['goals'] . '</td>';
+                echo '<td>' . $player['appearances'] . '</td>';
+                echo '<td>';
+                // echo '<a href="delete_legend.php?player_id=' . urlencode($player['player_id']) . '&category_id=' . urlencode($category['id']) . '" class="btn btn-danger">Delete</a>';
+                // echo '<a href="edit_legend.php?player_id=' . urlencode($player['player_id']) . '&category_id=' . urlencode($category['id']) . '" class="btn btn-primary">Update</a>';
+                // Inside the loop where you display categories
+                
+
+                echo '</td>';
+                echo '</tr>';
+            }
+
+            echo '</tbody>';
+            echo '</table>';
+            echo '</div>';
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+    ?>
+</div>
+<div class="container mt-5">
+    <?php
+    try {
+        // Fetch all comments
+        $commentsStmt = $db->prepare("SELECT * FROM comments");
+        $commentsStmt->execute();
+        $comments = $commentsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo '<h2 class="text-center">Comments Table</h2>';
+        echo '<table class="table table-bordered">';
+        echo '<thead>';
+        echo '<tr>';
+        echo '<th>#</th>';
+        echo '<th>Commenter Name</th>';
+        echo '<th>Comment Text</th>';
+        echo '<th>Action</th>';
+        echo '</tr>';
+        echo '</thead>';
+        echo '<tbody>';
+
+        foreach ($comments as $comment) {
+            echo '<tr>';
+            echo '<td>' . $comment['comment_id'] . '</td>';
+            echo '<td>' . $comment['commenter_name'] . '</td>';
+            echo '<td>' . $comment['comment_text'] . '</td>';
+            echo '<td>';
+            echo '<a href="delete_comment.php?id=' . urlencode($comment['comment_id']) . '" class="btn btn-danger">Delete</a>';
+            echo '</td>';
+            echo '</tr>';
+        }
+
+        echo '</tbody>';
+        echo '</table>';
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+    ?>
+</div>
+
+
+
+
   </body>
  </html>
 

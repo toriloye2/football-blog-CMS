@@ -1,11 +1,32 @@
 <?php
     
-// Name: oriooooooooooooooooooo
-// Date: 20th Sep. 2023
-// Description:The project is a simple blogging application 
-
 require('connect.php');
 include 'header.php';
+function filtered_name() {
+    return filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+}
+
+function valid_name() {
+    $name_length = strlen(filtered_name());
+    return $name_length > 0 && $name_length <= 140;
+}
+
+function filtered_email() {
+    return filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+}
+
+function valid_email() {
+    return filter_var(filtered_email(), FILTER_VALIDATE_EMAIL);
+}
+
+function filtered_password() {
+    return filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+}
+
+function valid_password() {
+    $password_length = strlen(filtered_password());
+    return $password_length > 0 && $password_length <= 140;
+}
 
 // Function to sanitize and validate user input
 function filter_input_data($input)
@@ -18,10 +39,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $confirm_password = filter_input_data('confirm_password');
-
+    $confirm_password = $_POST['confirm_password'];
+    // die($confirm_password);
      // Validate confirm password
-     if ($password !== $confirm_password) {
+     if (strlen($password) < 8) {
+        echo "Password must be at least 8 characters long.";
+       } else if ($password !== $confirm_password) {
         $error_message = "Passwords do not match. Please try again.";
     } else  {
     
@@ -41,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         $stmt->execute();
         echo "New record created successfully. Redirecting to landing page.";
-        header("location:create.php");
+        header("location:login.php");
         exit();
     } 
     catch(PDOException $e) {
@@ -127,31 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 <?php
-    function filtered_name() {
-        return filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    }
-
-    function valid_name() {
-        $name_length = strlen(filtered_name());
-        return $name_length > 0 && $name_length <= 140;
-    }
-
-    function filtered_email() {
-        return filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    }
-
-    function valid_email() {
-        return filter_var(filtered_email(), FILTER_VALIDATE_EMAIL);
-    }
-
-    function filtered_password() {
-        return filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    }
-
-    function valid_password() {
-        $password_length = strlen(filtered_password());
-        return $password_length > 0 && $password_length <= 140;
-    }
+   
 
 
 ?>

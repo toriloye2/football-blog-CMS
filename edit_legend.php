@@ -34,37 +34,50 @@ if (isset($_GET['id'])) {
     header('Location: dashboard.php'); // Redirect to the legends listing page
     exit();
 }
+// ... (existing code)
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Sanitize and validate input
     $first_name = sanitizeInput($_POST['first_name']);
     $last_name = sanitizeInput($_POST['last_name']);
-    $club = sanitizeInput($_POST['club']);
+    // $category_id = sanitizeInput($_POST['category_id']); // Remove this line
     $position = sanitizeInput($_POST['position']);
-    // $goals = filter_var($_POST['goals'], FILTER_VALIDATE_INT) ? $_POST['goals'] : 0;
-    // $appearances = filter_var($_POST['appearances'], FILTER_VALIDATE_INT) ? $_POST['appearances'] : 0;
 
-    // Validate and sanitize numeric input for goals
+    // Fetch category ID based on the selected position
+    $categorySql = "SELECT id FROM categories WHERE position = :position";
+    $categoryStmt = $db->prepare($categorySql);
+    $categoryStmt->bindParam(':position', $position, PDO::PARAM_STR);
+    $categoryStmt->execute();
+    $categoryResult = $categoryStmt->fetch(PDO::FETCH_ASSOC);
+
+    // Check if a valid category ID is obtained
+    if ($categoryResult && isset($categoryResult['id'])) {
+        $category_id = $categoryResult['id'];
+    } else {
+        $_SESSION['error'] = 'Invalid position selected.';
+        // Handle the error as needed
+        // You might want to redirect the user to the edit page again or display an error message.
+        // header('Location: edit_legend.php?id=' . $player_id);
+        // exit();
+    }
+
     $goals = filter_var($_POST['goals'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     $goals = ($goals !== false) ? $goals : 0;
-
-    // Validate and sanitize numeric input for appearances
     $appearances = filter_var($_POST['appearances'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     $appearances = ($appearances !== false) ? $appearances : 0;
-
 
     // Validate input further if needed
 
     // Update player data in the database
-$updateSql = "UPDATE football_legends SET first_name = :first_name, last_name = :last_name, position = :position, goals = :goals, appearances = :appearances WHERE player_id = :player_id";
-$updateStmt = $db->prepare($updateSql);
-$updateStmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
-$updateStmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
-$updateStmt->bindParam(':position', $position, PDO::PARAM_STR);
-$updateStmt->bindParam(':goals', $goals, PDO::PARAM_INT);
-$updateStmt->bindParam(':appearances', $appearances, PDO::PARAM_INT);
-$updateStmt->bindParam(':player_id', $player_id, PDO::PARAM_INT);
+    $updateSql = "UPDATE football_legends SET first_name = :first_name, last_name = :last_name, category_id = :category_id, goals = :goals, appearances = :appearances WHERE player_id = :player_id";
+    $updateStmt = $db->prepare($updateSql);
+    $updateStmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
+    $updateStmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
+    $updateStmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+    $updateStmt->bindParam(':goals', $goals, PDO::PARAM_INT);
+    $updateStmt->bindParam(':appearances', $appearances, PDO::PARAM_INT);
+    $updateStmt->bindParam(':player_id', $player_id, PDO::PARAM_INT);
 
     if ($updateStmt->execute()) {
         $_SESSION['success'] = 'Football legend updated successfully.';
@@ -74,6 +87,46 @@ $updateStmt->bindParam(':player_id', $player_id, PDO::PARAM_INT);
         $_SESSION['error'] = 'Error updating football legend.';
     }
 }
+
+// Check if the form is submitted
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//     // Sanitize and validate input
+//     $first_name = sanitizeInput($_POST['first_name']);
+//     $last_name = sanitizeInput($_POST['last_name']);
+//     $category_id = sanitizeInput($_POST['category_id']);
+//     $position = sanitizeInput($_POST['position']);
+//     // $goals = filter_var($_POST['goals'], FILTER_VALIDATE_INT) ? $_POST['goals'] : 0;
+//     // $appearances = filter_var($_POST['appearances'], FILTER_VALIDATE_INT) ? $_POST['appearances'] : 0;
+
+//     // Validate and sanitize numeric input for goals
+//     $goals = filter_var($_POST['goals'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+//     $goals = ($goals !== false) ? $goals : 0;
+
+//     // Validate and sanitize numeric input for appearances
+//     $appearances = filter_var($_POST['appearances'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+//     $appearances = ($appearances !== false) ? $appearances : 0;
+
+
+//     // Validate input further if needed
+
+//     // Update player data in the database
+// $updateSql = "UPDATE football_legends SET first_name = :first_name, last_name = :last_name, category_id = :category_id, goals = :goals, appearances = :appearances WHERE player_id = :player_id";
+// $updateStmt = $db->prepare($updateSql);
+// $updateStmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
+// $updateStmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
+// $updateStmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+// $updateStmt->bindParam(':goals', $goals, PDO::PARAM_INT);
+// $updateStmt->bindParam(':appearances', $appearances, PDO::PARAM_INT);
+// $updateStmt->bindParam(':player_id', $player_id, PDO::PARAM_INT);
+
+//     if ($updateStmt->execute()) {
+//         $_SESSION['success'] = 'Football legend updated successfully.';
+//         header('Location: dashboard.php'); // Redirect to the legends listing page
+//         exit();
+//     } else {
+//         $_SESSION['error'] = 'Error updating football legend.';
+//     }
+// }
 ?>
 
 <!DOCTYPE html>
@@ -104,6 +157,15 @@ $updateStmt->bindParam(':player_id', $player_id, PDO::PARAM_INT);
                 <label for="last_name" class="form-label">Last Name</label>
                 <input type="text" class="form-control" id="last_name" name="last_name" value="<?php echo $legend['last_name']; ?>" required>
             </div>
+            <div class="mb-3">
+            <label for="image" class="form-label">Upload Image</label>
+            <input type="file" class="form-control" id="image" name="image">
+        </div>
+
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="deleteImage" name="deleteImage">
+            <label class="form-check-label" for="deleteImage">Delete Image</label>
+        </div>
 
             <div class="form-outline mb-4">
     <label for="position" class="form-label">Position:</label>

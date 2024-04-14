@@ -4,7 +4,7 @@
 // Date: 20th Sep. 2023
 // Description:The project is a simple blogging application 
 
-require('connect.php');
+
 
 
 
@@ -19,6 +19,7 @@ session_destroy();
 echo "You have been logged out!";
 header('Location: login.php');
 exit;
+require('connect.php');
 ?>
 
 

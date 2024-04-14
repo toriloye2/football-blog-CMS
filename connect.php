@@ -1,7 +1,7 @@
  <?php
      define('DB_DSN','mysql:host=localhost;dbname=footballside;charset=utf8');
-     define('DB_USER','serveruser');
-     define('DB_PASS','gorgonzola7!');     
+     define('DB_USER','root');
+     define('DB_PASS','');     
      
     //  PDO is PHP Data Objects
     //  mysqli <-- BAD. 

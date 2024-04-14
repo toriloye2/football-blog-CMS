@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('connect.php');
+include 'header.php';
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $player_id = filter_var($_GET['id'], FILTER_VALIDATE_INT);
@@ -25,4 +26,5 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
 header("Location: dashboard.php");
 exit();
+
 ?>

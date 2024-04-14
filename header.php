@@ -23,12 +23,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="aboutus.php">About us</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="Login.php">Login</a>
-                    </li>
+                    
                     <li class="nav-item">
-                        <a class="nav-link" href="Logout.php">Logout</a>
-                    </li> -->
+                        <a class="nav-link" href="categories.php">Categories</a>
+                    </li>
+                    
                     <?php if (!isset($_SESSION["loggedin"])): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="Login.php">Login</a>
@@ -51,8 +50,9 @@
                 </ul>
             </div>
         </div>
+
     </nav>
-    <div class="container mt-4">
+    <div class="container mt-4 ">
         <!-- Your page content goes here -->
     </div>
     

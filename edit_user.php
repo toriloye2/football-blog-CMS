@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Sanitize and validate input
     $name = sanitizeInput($_POST['name']);
     $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) ? $_POST['email'] : '';
-    $role = in_array($_POST['role'], [1, 2]) ? $_POST['role'] : 2; // Assuming role can be 1 (Admin) or 2 (User)
+    $role = in_array($_POST['role'], [1, 0]) ? $_POST['role'] : 0; // Assuming role can be 1 (Admin) or 2 (User)
 
     // Validate input further if needed
 
