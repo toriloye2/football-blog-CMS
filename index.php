@@ -5,7 +5,7 @@ require('connect.php');
 include 'header.php';
 
 // Check if the user is logged in
-// if (isset($_SESSION["loggedin"]) && 
+// if (isset($_SESSION["loggedin"]) &&
 // if (isset($_SESSION["loggedin"]) === true) {
 //     $welcomeMessage = "Welcome, " . $_SESSION["name"] . "!";
 // } else {
@@ -92,7 +92,7 @@ $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
     <!-- Featured Legends Section -->
-    
+
     <!-- Searching Form Container -->
     <div class="col-md-6">
         <form class="form-inline" method="get" action="">
@@ -111,7 +111,7 @@ $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </form>
     </nav>
 
-    
+
     <div class="row">
         <?php
         try {
@@ -159,7 +159,7 @@ $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </body>
 <footer style="background-color: #f8f9fa; padding: 20px; text-align: center;">
     <p>© 2023 T-Soccer Blog. All rights reserved.</p>
-    <p><a href="aboutus.php">About Us</a> | <a href="contactus.php">Contact Us</a></p>
+    <p><a href="aboutus.php">About Us</a>
 
 
   </footer>
