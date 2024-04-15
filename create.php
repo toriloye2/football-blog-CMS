@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql = "INSERT INTO football_legends (first_name, last_name, category_id, goals, appearances, images) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt= $db->prepare($sql);
         $stmt->execute([$first_name, $last_name, $category_id, $goals, $appearances, $target_file]);
-       
+
         // Redirect to index.php
         header("Location: index.php");
         exit();
@@ -70,10 +70,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    
+
     <title> Football legends</title>
 </head>
-  
+
 <body>
 <section class="vh-100 bg-image"
   style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp');">
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="col-12 col-md-9 col-lg-7 col-xl-6">
           <div class="card" style="border-radius: 15px;">
             <div class="card-body p-5">
-            
+
          <form  method="post"  enctype="multipart/form-data">
 
             <div id="create">
@@ -100,11 +100,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
      </div>
 
      <!-- <input type="text" value=""> -->
-     
-        
+
+
      <div class="form-outline mb-4">
     <label for="category_id" class="form-label">Position:</label>
-    
+
     <?php
 try {
     // Fetch all positions from the categories table
@@ -132,7 +132,7 @@ try {
 }
 ?>
 
-    
+
 </div>
 
      <div class="form-outline mb-4">
@@ -151,15 +151,15 @@ try {
       <label for="image">Select Image:</label>
         <input type="file" name="image" id="image" accept="image/*">
         </div>
-    
+
         <div class="d-flex justify-content-center">
             <button type="submit"   class="btn btn-success btn-block btn-lg gradient-custom-4 text-body"  >Submit</button>
             </div>
-    
+
             </div>
         </form>
-    
-            </div> 
+
+            </div>
             </div>
             </div>
             </div>
@@ -168,7 +168,7 @@ try {
 </body>
 <footer style="background-color: #f8f9fa; padding: 20px; text-align: center;">
     <p>© 2023 T-Soccer Blog. All rights reserved.</p>
-    <p><a href="aboutus.php">About Us</a> | <a href="contactus.php">Contact Us</a></p>
+    <p><a href="aboutus.php">About Us</a>
 
 
   </footer>

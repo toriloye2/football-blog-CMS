@@ -1,13 +1,13 @@
 <?php
 /**************
- * Name: oriooooooooooooooooooo 
- * Date: 20th Sep. 2023 
- * Description: The project is a simple blogging application 
+ * Name: oriooooooooooooooooooo
+ * Date: 20th Sep. 2023
+ * Description: The project is a simple blogging application
  **************/
 // Start the session
 session_start();
 require('connect.php');
-include 'header.php'; 
+include 'header.php';
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +22,7 @@ include 'header.php';
         <?php
         try {
              // Prepare the SQL statement with a JOIN to fetch category (position) information
-            $stmt = $db->prepare("SELECT fl.*, c.position 
+            $stmt = $db->prepare("SELECT fl.*, c.position
             FROM football_legends fl
             JOIN categories c ON fl.category_id = c.id");
 
@@ -65,6 +65,6 @@ include 'header.php';
 </body>
 <footer style="background-color: #f8f9fa; padding: 20px; text-align: center;">
     <p>© 2023 T-Soccer Blog. All rights reserved.</p>
-    <p><a href="aboutus.php">About Us</a> | <a href="contactus.php">Contact Us</a></p>
+    <p><a href="aboutus.php">About Us</a> |
 </footer>
 </html>

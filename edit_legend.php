@@ -4,7 +4,7 @@ session_start();
 
 // Include the database connection file (modify the path if needed)
 require('connect.php');
-include 'header.php'; 
+include 'header.php';
 
 // Function to sanitize user input
 function sanitizeInput($input)
@@ -134,8 +134,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    
+
+
     <title>Edit Football Legend</title>
 </head>
 <body>
@@ -212,6 +212,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 <footer style="background-color: #f8f9fa; padding: 20px; text-align: center;">
     <p>© 2023 T-Soccer Blog. All rights reserved.</p>
-    <p><a href="aboutus.php">About Us</a> | <a href="contactus.php">Contact Us</a></p>
+    <p><a href="aboutus.php">About Us</a>
 </footer>
 </html>

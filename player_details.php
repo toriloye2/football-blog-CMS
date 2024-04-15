@@ -9,7 +9,7 @@ if (isset($_GET['id'])) {
     $playerId = $_GET['id'];
 
     // Prepare the SQL statement to fetch details of the selected player
-    $stmt = $db->prepare("SELECT fl.*, c.position 
+    $stmt = $db->prepare("SELECT fl.*, c.position
                         FROM football_legends fl
                         JOIN categories c ON fl.category_id = c.id
                         WHERE fl.player_id = :playerId");
@@ -29,9 +29,9 @@ if (isset($_GET['id'])) {
         echo '<p>Goals: ' . $playerDetails['goals'] . '</p>';
         echo '<p>Appearances: ' . $playerDetails['appearances'] . '</p>';
 
-        
 
-        
+
+
 
         // You can also display the player's image here using the image URL stored in the database
         $imageUrl = $playerDetails['images'] ?? 'https://placeimg.com/300/200/sports';
@@ -46,8 +46,10 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 echo '<h2>Comments</h2>';
 foreach ($comments as $comment) {
-    echo '<p>' . $comment['comment_text'] . '</p>';
-}}
+    echo '<p>Name: ' . $comment['commenter_name'] .
+    ', Comment: ' . $comment['comment_text'] . '</p>';
+}
+}
 } else {
     // Player ID not provided in the URL, handle this case accordingly
     echo "Player ID not provided";
@@ -61,7 +63,7 @@ foreach ($comments as $comment) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Football Legends Page</title>
 
-  
+
 </head>
 <body>
 
@@ -83,7 +85,7 @@ foreach ($comments as $comment) {
             <form action="" method="post">
                 <input type="hidden" name="player_id" value="<?php echo $playerId; ?>">
                 <input type="hidden" name="category_id" value="<?php echo $playerDetails['category_id']; ?>">
-                
+
                 <?php
                 if (isset($_SESSION['user_id'])) {
                     $userId = $_SESSION['user_id'];
@@ -103,13 +105,13 @@ foreach ($comments as $comment) {
                     echo '<input type="text" name="commenter_name" id="commenter_name" class="form-control" required>';
                 }
                 ?>
-                
+
                 <br>
-                
+
                 <label for="comment_text" class="form-label">Your Comment:</label>
                 <textarea name="comment_text" id="comment_text" class="form-control" rows="4" required></textarea>
                 <br>
-                
+
                 <button type="submit" class="btn btn-primary">Submit Comment</button>
             </form>
         </div>
@@ -120,7 +122,7 @@ foreach ($comments as $comment) {
 </body>
 <footer style="background-color: #f8f9fa; padding: 20px; text-align: center;">
     <p>© 2023 T-Soccer Blog. All rights reserved.</p>
-    <p><a href="aboutus.php">About Us</a> | <a href="contactus.php">Contact Us</a></p>
+    <p><a href="aboutus.php">About Us</a> |
 
 
   </footer>

@@ -1,7 +1,7 @@
 <?php
-session_start();
-require('connect.php');
-include 'header.php';
+//session_start();
+require_once('connect.php');
+//include 'header.php';
 
 // Function to sanitize user input
 function sanitizeInput($input) {

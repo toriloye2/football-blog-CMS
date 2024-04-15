@@ -28,11 +28,11 @@ $sort_order = isset($_GET['order']) && strtolower($_GET['order']) == 'desc' ? 'D
 // If sort column is defined
 if(isset($_GET['column']) && in_array($_GET['column'], array('user_id', 'name', 'email', 'role', 'date', 'password'))){
     $sort_column = $_GET['column'];
-    $up_or_down = str_replace(array('ASC','DESC'), array('up','down'), $sort_order); 
+    $up_or_down = str_replace(array('ASC','DESC'), array('up','down'), $sort_order);
     $asc_or_desc = $sort_order == 'ASC' ? 'desc' : 'asc';
     $add_class = ' class="highlight"';
 } else {
-    $up_or_down = ''; 
+    $up_or_down = '';
     $asc_or_desc = 'desc';
     $add_class = '';
 }
@@ -48,13 +48,13 @@ $row = $result->fetch(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    
+
     <title>Dashboard</title>
 </head>
 <body>
 
 
-    
+
     <h1 class="text-center">Dashboard</h1>
     <!-- <div class="container mt-5">
 
@@ -109,9 +109,9 @@ $row = $result->fetch(PDO::FETCH_ASSOC);
                     <tbody>
                         <?php
                         if ($result->rowCount() > 0) {
-                            $counter = 1; 
+                            $counter = 1;
                             while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                echo "<tr>"; 
+                                echo "<tr>";
                                 echo "<td>" . $counter . "</td>";
                                 echo "<td>" . $row["user_id"] . "</td>";
                                 echo "<td>" . $row["name"] . "</td>";
@@ -166,9 +166,9 @@ $legends_result = $db->query($legends_sql);
             <tbody>
                 <?php
                 if ($legends_result->rowCount() > 0) {
-                    $counter_legends = 1; 
+                    $counter_legends = 1;
                     while ($legend_row = $legends_result->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<tr>"; 
+                        echo "<tr>";
                         echo "<td>" . $counter_legends . "</td>";
                         echo "<td>" . $legend_row["player_id"] . "</td>";
                         echo "<td>" . $legend_row["first_name"] . "</td>";
@@ -205,7 +205,7 @@ $legends_result = $db->query($legends_sql);
         foreach ($categories as $category) {
 
             $category_sort_order = isset($_GET['order_dir']) ? $_GET['order_dir'] : 'ASC';
-            
+
             echo '<h2 class="text-center">' . $category['position'] . '</h2>';
             echo '<div class="table-responsive">';
             echo '<table class="table table-bordered">';
@@ -223,8 +223,8 @@ $legends_result = $db->query($legends_sql);
             // Prepare the SQL statement to fetch players by category with sorting
             $order_by = isset($_GET['order_by']) ? $_GET['order_by'] : 'first_name';
             $order_dir = isset($_GET['order_dir']) ? $_GET['order_dir'] : 'ASC';
-            
-            $playersStmt = $db->prepare("SELECT fl.*, c.position 
+
+            $playersStmt = $db->prepare("SELECT fl.*, c.position
                                          FROM football_legends fl
                                          JOIN categories c ON fl.category_id = c.id
                                          WHERE fl.category_id = :category_id
@@ -232,6 +232,9 @@ $legends_result = $db->query($legends_sql);
             $playersStmt->bindParam(':category_id', $category['id']);
             $playersStmt->execute();
             $players = $playersStmt->fetchAll(PDO::FETCH_ASSOC);
+            echo '<tr>';
+            echo '<td colspan="5">'; // Span the entire row
+            echo '<a href="delete_category.php?id=' . urlencode($category['id']) . '" class="btn btn-danger">Delete Category</a>';
 
             // Loop through each player in the category and display their data in a table row
             foreach ($players as $player) {
@@ -248,7 +251,9 @@ $legends_result = $db->query($legends_sql);
                 // echo '<a href="delete_legend.php?player_id=' . urlencode($player['player_id']) . '&category_id=' . urlencode($category['id']) . '" class="btn btn-danger">Delete</a>';
                 // echo '<a href="edit_legend.php?player_id=' . urlencode($player['player_id']) . '&category_id=' . urlencode($category['id']) . '" class="btn btn-primary">Update</a>';
                 // Inside the loop where you display categories
-                
+
+
+
 
                 echo '</td>';
                 echo '</tr>';

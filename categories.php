@@ -31,8 +31,8 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     <button type="submit" class="btn btn-primary">Submit </button>
 </form>
 </div>
-    
-    
+
+
 </body>
 </html>
 
@@ -64,7 +64,7 @@ try {
         echo '<tbody>';
 
         // Prepare the SQL statement to fetch players by category
-        $playersStmt = $db->prepare("SELECT fl.*, c.position 
+        $playersStmt = $db->prepare("SELECT fl.*, c.position
                                      FROM football_legends fl
                                      JOIN categories c ON fl.category_id = c.id
                                      WHERE fl.category_id = :category_id");
@@ -79,11 +79,17 @@ try {
             echo '<td>' . $player['position'] . '</td>';
             echo '<td>' . $player['goals'] . '</td>';
             echo '<td>' . $player['appearances'] . '</td>';
-            echo "<td>
-            <a href='edit_legend.php?id=" . $player["player_id"] . "' class='btn btn-primary btn-sm'>Update</a>
-            <a href='delete_legend.php?id=" . $player["player_id"] . "' class='btn btn-danger btn-sm'>Delete</a>
-            </td>";
-           
+
+            $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] == 0;
+
+            echo "<td>";
+            if ($isAdmin) {
+                // Only display the update and delete buttons if the user is an admin
+                echo "<a href='edit_legend.php?id=" . $player["player_id"] . "' class='btn btn-primary btn-sm'>Update</a>";
+                echo "<a href='delete_legend.php?id=" . $player["player_id"] . "' class='btn btn-danger btn-sm'>Delete</a>";
+            }
+            echo "</td>";
+
             echo '</tr>';
         }
 
