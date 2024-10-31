@@ -1,5 +1,5 @@
 <?php
-    
+
 require('connect.php');
 include 'header.php';
 function filtered_name() {
@@ -47,8 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        } else if ($password !== $confirm_password) {
         $error_message = "Passwords do not match. Please try again.";
     } else  {
-    
-    
+
+
 
     try {
         // $db is your PDO connection
@@ -61,12 +61,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password', $hashed_password);
-        
+
         $stmt->execute();
         echo "New record created successfully. Redirecting to landing page.";
         header("location:login.php");
         exit();
-    } 
+    }
     catch(PDOException $e) {
         echo "error: " . $e->getMessage();
     }
@@ -94,12 +94,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <div class="card" style="border-radius: 15px;">
             <div class="card-body p-5">
               <!-- <h2 class="text-uppercase text-center mb-5">Create an account</h2> -->
-    
+
               <form method="post">
               <div id="signin">
                 <h1 class="text-uppercase text-center mb-5">Create an Account</h1>
-               
-                    
+
+
                     <div class="form-outline mb-4">
                         <!-- <input type="text" id="form3Example1cg" class="form-control form-control-lg" /> -->
                         <label for="name" class="form-label">Name:</label>
@@ -122,19 +122,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo '<p>' . $error_message . '</p>';
     }
     ?>
-                  
-    
-                    </div>
+
+
+                    </div>\
                     <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Signup</button> 
+                        <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Signup</button>
                     </div>
-                
+
                 <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="login.php"
                     class="fw-bold text-body"><u>Login here</u></a></p>
-                
+
                 </form>
 
-                
+
               </div>
            </div>
          </div>
@@ -142,15 +142,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
      </div>
     </section>
-    
-    
-    
-        
+
+
+
+
 
 
 
 <?php
-   
+
 
 
 ?>
