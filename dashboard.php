@@ -215,8 +215,8 @@ $legends_result = $db->query($legends_sql);
             echo '<th><a href="?category_id=' . $category['id'] . '&order_by=position&order_dir=' . ($category_sort_order == 'ASC' ? 'DESC' : 'ASC') . '">Position</a></th>';
             echo '<th><a href="?category_id=' . $category['id'] . '&order_by=goals&order_dir=' . ($category_sort_order == 'ASC' ? 'DESC' : 'ASC') . '">Goals</a></th>';
             echo '<th><a href="?category_id=' . $category['id'] . '&order_by=appearances&order_dir=' . ($category_sort_order == 'ASC' ? 'DESC' : 'ASC') . '">Appearances</a></th>';
-            // echo '<th>Actions</th>';
-            // echo '</tr>';
+            echo '<th>Actions</th>';
+            echo '</tr>';
             echo '</thead>';
             echo '<tbody>';
 
@@ -232,9 +232,6 @@ $legends_result = $db->query($legends_sql);
             $playersStmt->bindParam(':category_id', $category['id']);
             $playersStmt->execute();
             $players = $playersStmt->fetchAll(PDO::FETCH_ASSOC);
-            echo '<tr>';
-            echo '<td colspan="5">'; // Span the entire row
-            echo '<a href="delete_category.php?id=' . urlencode($category['id']) . '" class="btn btn-danger">Delete Category</a>';
 
             // Loop through each player in the category and display their data in a table row
             foreach ($players as $player) {
@@ -251,8 +248,6 @@ $legends_result = $db->query($legends_sql);
                 // echo '<a href="delete_legend.php?player_id=' . urlencode($player['player_id']) . '&category_id=' . urlencode($category['id']) . '" class="btn btn-danger">Delete</a>';
                 // echo '<a href="edit_legend.php?player_id=' . urlencode($player['player_id']) . '&category_id=' . urlencode($category['id']) . '" class="btn btn-primary">Update</a>';
                 // Inside the loop where you display categories
-
-
 
 
                 echo '</td>';

@@ -79,16 +79,10 @@ try {
             echo '<td>' . $player['position'] . '</td>';
             echo '<td>' . $player['goals'] . '</td>';
             echo '<td>' . $player['appearances'] . '</td>';
-
-            $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] == 0;
-
-            echo "<td>";
-            if ($isAdmin) {
-                // Only display the update and delete buttons if the user is an admin
-                echo "<a href='edit_legend.php?id=" . $player["player_id"] . "' class='btn btn-primary btn-sm'>Update</a>";
-                echo "<a href='delete_legend.php?id=" . $player["player_id"] . "' class='btn btn-danger btn-sm'>Delete</a>";
-            }
-            echo "</td>";
+            echo "<td>
+            <a href='edit_legend.php?id=" . $player["player_id"] . "' class='btn btn-primary btn-sm'>Update</a>
+            <a href='delete_legend.php?id=" . $player["player_id"] . "' class='btn btn-danger btn-sm'>Delete</a>
+            </td>";
 
             echo '</tr>';
         }

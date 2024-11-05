@@ -46,10 +46,8 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 echo '<h2>Comments</h2>';
 foreach ($comments as $comment) {
-    echo '<p>Name: ' . $comment['commenter_name'] .
-    ', Comment: ' . $comment['comment_text'] . '</p>';
-}
-}
+    echo '<p>' . $comment['comment_text'] . '</p>';
+}}
 } else {
     // Player ID not provided in the URL, handle this case accordingly
     echo "Player ID not provided";
@@ -122,7 +120,7 @@ foreach ($comments as $comment) {
 </body>
 <footer style="background-color: #f8f9fa; padding: 20px; text-align: center;">
     <p>© 2023 T-Soccer Blog. All rights reserved.</p>
-    <p><a href="aboutus.php">About Us</a>
+    <p><a href="aboutus.php">About Us</a> | <a href="contactus.php">Contact Us</a></p>
 
 
   </footer>

@@ -1,7 +1,6 @@
 <?php
 // Include the database connection file
 include "connect.php";
-include 'header.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve the positions value from the form

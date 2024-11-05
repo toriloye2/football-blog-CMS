@@ -124,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>
 
 
-                    </div>\
+                    </div>
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Signup</button>
                     </div>
