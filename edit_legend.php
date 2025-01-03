@@ -210,8 +210,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </script>
     </div>
 </body>
-<footer style="background-color: #f8f9fa; padding: 20px; text-align: center;">
-    <p>© 2023 T-Soccer Blog. All rights reserved.</p>
-    <p><a href="aboutus.php">About Us</a> | <a href="contactus.php">Contact Us</a></p>
-</footer>
+
+<?php include 'footer.php'; ?>
 </html>
