@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 require('connect.php');
@@ -100,14 +101,14 @@ foreach ($comments as $comment) {
 
                 if (!isset($_SESSION['user_id']) || !isset($userDetails['name'])) {
                     echo '<label for="commenter_name" class="form-label">Your Name:</label>';
-                    echo '<input type="text" name="commenter_name" id="commenter_name" class="form-control" required>';
+                    echo '<input type="text" name="commenter_name" id="commenter_name" class="form-control" >';
                 }
                 ?>
 
                 <br>
 
                 <label for="comment_text" class="form-label">Your Comment:</label>
-                <textarea name="comment_text" id="comment_text" class="form-control" rows="4" required></textarea>
+                <textarea name="comment_text" id="comment_text" class="form-control" rows="4"></textarea>
                 <br>
 
                 <button type="submit" class="btn btn-primary">Submit Comment</button>
@@ -118,10 +119,6 @@ foreach ($comments as $comment) {
 
 
 </body>
-<footer style="background-color: #f8f9fa; padding: 20px; text-align: center;">
-    <p>© 2023 T-Soccer Blog. All rights reserved.</p>
-    <p><a href="aboutus.php">About Us</a> | <a href="contactus.php">Contact Us</a></p>
 
-
-  </footer>
+<?php include 'footer.php'; ?>
 </html>
