@@ -5,69 +5,65 @@ session_start();
 require('connect.php');
 include 'header.php';
 
+$error = ""; // Initialize an error message variable
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $password = $_POST['password'];
+
+    // Basic validation for password length
     if (strlen($password) < 8) {
-        echo "Password must be at least 8 characters long.";
+        $error = "Password must be at least 8 characters long.";
     } else {
-        echo "Password is valid.";
-    }
+        try {
+            // Prepare a select statement
+            $sql = "SELECT user_id, name, password, role FROM user WHERE name = :name";
+            $stmt = $db->prepare($sql);
 
-    try {
-        // Prepare a select statement
-        $sql = "SELECT name, password, role FROM user WHERE name = :name";
-        $stmt = $db->prepare($sql);
+            // Bind variables to the prepared statement as parameters
+            $stmt->bindParam(':name', $name);
 
-        // Bind variables to the prepared statement as parameters
-        $stmt->bindParam(':name', $name);
+            // Execute the prepared statement
+            $stmt->execute();
 
-        // Attempt to execute the prepared statement
-        if ($stmt->execute()) {
-            // Check if username exists, if yes then verify password
+            // Check if username exists
             if ($stmt->rowCount() == 1) {
-                if ($row = $stmt->fetch()) {
-                    $hashed_password = $row['password'];
-                    if (password_verify($password, $hashed_password)) {
-                        // Store data in session variables
-                        $_SESSION["loggedin"] = true;
-                        $_SESSION["name"] = $name;
-                        $_SESSION["role"] = $row['role'];  // Add the role to the session
+                // Fetch the user data
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                        // Redirect based on the role
-                        if ($_SESSION["role"] == 1) {
-                            header("location: dashboard.php");
-                            exit(); // Ensure no further code execution after redirection
-                        } elseif ($_SESSION["role"] == 0) {
-                            header("location: index.php");
-                            exit(); // Ensure no further code execution after redirection
-                        } else {
-                            // Handle other roles if needed
-                            echo "Unknown role!";
-                        }
+                // Verify the password
+                $hashed_password = $row['password'];
+                if (password_verify($password, $hashed_password)) {
+                    // Store data in session variables
+                    $_SESSION["loggedin"] = true;
+                    $_SESSION["name"] = $row['name'];
+                    $_SESSION["role"] = $row['role'];
+                    $_SESSION["user_id"] = $row['user_id']; // Correctly set user_id
+
+                    // Redirect based on the role
+                    if ($_SESSION["role"] == 1) {
+                        header("location: dashboard.php");
+                        exit(); // Ensure no further code execution after redirection
+                    } elseif ($_SESSION["role"] == 0) {
+                        header("location: index.php");
+                        exit(); // Ensure no further code execution after redirection
                     } else {
-                        // Display an error message if password is not valid
-                        echo "Wrong Password lad.";
+                        $error = "Unknown role!";
                     }
+                } else {
+                    $error = "Incorrect password. Please try again.";
                 }
             } else {
-                // Display an error message if username doesn't exist
-                echo "C'mon your Username's Wrong ";
+                $error = "Invalid username. Please try again.";
             }
-        } else {
+        } catch (PDOException $e) {
             // Log the error
-            error_log("Database error during login: " . implode(", ", $stmt->errorInfo()));
-            echo "Oops! Something went wrong. Please try again later.";
+            error_log("PDO Exception: " . $e->getMessage());
+            $error = "Oops! Something went wrong. Please try again later.";
         }
-    } catch (PDOException $e) {
-        // Log the error
-        error_log("PDO Exception during login: " . $e->getMessage());
-        echo "Oops! Something went wrong. Please try again later.";
     }
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -92,6 +88,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <div id="login">
                                         <h1 class="text-uppercase text-center mb-5">Login</h1>
 
+                                        <!-- Display error message -->
+                                        <?php if (!empty($error)): ?>
+                                            <div class="alert alert-danger text-center">
+                                                <?php echo htmlspecialchars($error); ?>
+                                            </div>
+                                        <?php endif; ?>
+
                                         <div class="form-outline mb-4">
                                             <label for="name" class="form-label">Name:</label>
                                             <input type="text" class="form-control form-control-lg" id="name" name="name" placeholder="Enter your name" required>
@@ -103,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         </div>
 
                                         <div class="d-flex justify-content-center">
-                                            <button type="submit" value="Login" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body" onclick="validateAndSubmit(event)">Login</button>
+                                            <button type="submit" value="Login" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Login</button>
                                         </div>
                                         <p class="text-center text-muted mt-5 mb-0"> New User? <a href="signup.php" class="fw-bold text-body"><u>Register here</u></a></p>
                                     </div>
@@ -116,25 +119,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </section>
 
-    <script>
-        function validateAndSubmit(event) {
-            var name = document.getElementById('name').value;
-            var password = document.getElementById('password').value;
-
-            // Your validation logic goes here
-            if (name.trim() === '' || password.trim() === '') {
-                alert('Please enter both name and password.');
-            } else {
-                // Prevent the default form submission behavior
-                event.preventDefault();
-
-                document.getElementById('loginForm').submit();
-            }
-        }
-    </script>
-
 </body>
 <?php include 'footer.php'; ?>
-</footer>
-
 </html>

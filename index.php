@@ -1,35 +1,15 @@
 <?php
-
 session_start();
-require('connect.php');
+require('connect.php'); // Database connection
 include 'header.php';
 
-// Check if the user is logged in
-// if (isset($_SESSION["loggedin"]) &&
-// if (isset($_SESSION["loggedin"]) === true) {
-//     $welcomeMessage = "Welcome, " . $_SESSION["name"] . "!";
-// } else {
-//     // If not logged in, redirect to the login page
-//     header("location: login.php");
-//     exit();
-// }
+$welcomeMessage = null;
 
-// Check if a search term is provided
-if (isset($_GET['search']) && !empty($_GET['search'])) {
-    $searchTerm = $_GET['search'];
-    $stmt = $db->prepare("SELECT * FROM football_legends WHERE first_name LIKE :search OR last_name LIKE :search");
-    $stmt->bindValue(':search', "%$searchTerm%", PDO::PARAM_STR);
-} else {
-    // If no search term, proceed without sorting
-    $stmt = $db->prepare("SELECT * FROM football_legends");
+// Display welcome message if logged in and not shown before
+if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && !isset($_SESSION["welcome_shown"])) {
+    $welcomeMessage = "Welcome, " . htmlspecialchars($_SESSION["name"]) . "!";
+    $_SESSION["welcome_shown"] = true; // Set the welcome message as shown
 }
-
-// Execute the statement
-$stmt->execute();
-
-// Fetch all the players' data
-$players = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
 <!DOCTYPE html>
@@ -38,128 +18,178 @@ $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
-    <title>Football Legends</title>
+    <title>Welcome to T.O Blog</title>
+
+    <style>
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+        }
+
+        .hero .btn {
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .hero .btn-primary {
+            background: linear-gradient(to right, #1abc9c, #16a085);
+            border: none;
+            color: white;
+        }
+
+        .hero .btn-primary:hover {
+            background: linear-gradient(to right, #16a085, #1abc9c);
+            transform: translateY(-5px);
+        }
+
+        .hero .btn-secondary {
+            background: white;
+            color: #27ae60;
+            border: 2px solid #27ae60;
+        }
+
+        .hero .btn-secondary:hover {
+            background: #27ae60;
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        /* Highlights Section */
+        .highlights {
+            background: #f8fdf4;
+            padding: 50px 20px;
+        }
+
+        .highlights h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .highlight-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .highlight-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .highlight-card img {
+            max-width: 60px;
+            margin-bottom: 15px;
+        }
+
+        .highlight-card h5 {
+            font-size: 1.2rem;
+            color: #27ae60;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .highlight-card p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Jumbotron -->
-    <div class="jumbotron text-center bg-success text-white">
-        <h1 class="display-4">Explore the Legends of Football</h1>
-        <p class="lead">Uncover the stories of football's greatest legends and relive their iconic moments.</p>
-        <hr class="my-4">
-        <p>Discover exclusive insights and tributes to the football heroes who shaped the game.</p>
-        <a class="btn btn-light btn-lg" href="players.php" role="button">Read Legends' Stories</a>
-    </div>
-    <!-- <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-  <ol class="carousel-indicators">
-    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-  </ol>
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img class="d-block w-100" src="img1.jpg" alt="First slide">
-      <div class="carousel-caption d-none d-md-block">
-        <h5>Explore the Legends of Football</h5>
-        <p>Uncover the stories of football's greatest legends and relive their iconic moments.</p>
-      </div>
-    </div>
-    <div class="carousel-item">
-      <img class="d-block w-100" src="img2.jpg" alt="Second slide">
-      <div class="carousel-caption d-none d-md-block">
-        <h5>Discover exclusive insights</h5>
-        <p>Tributes to the football heroes who shaped the game.</p>
-      </div>
-    </div>
-    <div class="carousel-item">
-      <img class="d-block w-100" src="img3.jpg" alt="Third slide">
-      <div class="carousel-caption d-none d-md-block">
-        <h5>Read Legends' Stories</h5>
-        <p><a class="btn btn-light" href="players.php" role="button">Click Here</a></p>
-      </div>
-    </div>
-  </div>
-  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
-</div> -->
+    <!-- Display Welcome Message -->
+    <?php if ($welcomeMessage): ?>
+        <div class="alert alert-success text-center">
+            <?= $welcomeMessage ?>
+        </div>
+    <?php endif; ?>
 
-
-    <!-- Featured Legends Section -->
-
-    <!-- Searching Form Container -->
-    <div class="col-md-6">
-        <form class="form-inline" method="get" action="">
-            <label class="mr-2" for="search">Search:</label>
-            <input type="text" class="form-control mr-2" name="search" id="search" placeholder="Player name">
-            <button type="submit" class="btn btn-secondary">Search</button>
-        </form>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Welcome to T.O Blog</h1>
+        <p>Your go-to source for football legends, match insights, and engaging stories.</p>
+        <a href="players.php" class="btn btn-primary">Explore Legends</a>
+        <a href="categories.php" class="btn btn-secondary">View Categories</a>
     </div>
 
-    <nav class="navbar navbar-dark default-color">
-        <form class="form-inline">
-            <!-- <div class="md-form my-0">
-                <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+    <!-- Highlights Section -->
+    <div class="highlights">
+    <h2>Why Choose T.O Blog?</h2>
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+                <a href="players.php" style="text-decoration: none;">
+                    <div class="highlight-card">
+                        <img src="https://via.placeholder.com/60" alt="Icon">
+                        <h5>100+ Legends</h5>
+                        <p>Read profiles of the greatest footballers who made history.</p>
+                    </div>
+                </a>
             </div>
-            <button class="btn btn-outline-white btn-md my-2 my-sm-0 ml-3" type="submit">Search</button> -->
-        </form>
-    </nav>
-
-
-    <div class="row">
-        <?php
-        try {
-             // Prepare the SQL statement with a JOIN to fetch category (position) information
-            $stmt = $db->prepare("SELECT *
-            FROM football_legends fl
-           ");
-
-
-            // Execute the statement
-            $stmt->execute();
-
-            // Fetch all the players' data
-            $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Loop through each player and display their data
-            foreach ($players as $player) {
-                echo '<div class="col-md-4 mb-4">';
-                echo '<div class="card">';
-
-                // Use a placeholder image or a default image URL
-                // $imageUrl = isset($player['image']) ? $player['image'] : 'https://placeimg.com/300/200/sports';
-                // You can also display the player's image here using the image URL stored in the database
-        $imageUrl = $player['images'] ?? 'https://placeimg.com/300/200/sports';
-        // echo '<img src="' . $imageUrl . '" alt="' . $player['first_name'] . '">';
-
-        echo '<img src="' . $imageUrl . '" class="card-img-top" alt="' . $player['first_name'] . '">';
-        echo '<div class="card-body">';
-        echo '<h5 class="card-title"><a href="player_details.php?id=' . $player['player_id'] . '">' . $player['first_name'] . ' ' . $player['last_name'] . '</a></h5>';
-        // echo '<p class="card-text">' . $player['position'] . '</p>';
-        // echo '<p class="card-text">Goals: ' . $player['goals'] . '</p>';
-        // echo '<p class="card-text">Appearances: ' . $player['appearances'] . '</p>';
-        echo '<br>';
-        echo '<hr>';
-                echo '</div>';
-                echo '</div>';
-                echo '</div>';
-            }
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-        }
-        ?>
+            <div class="col">
+                <a href="insights.php" style="text-decoration: none;">
+                    <div class="highlight-card">
+                        <img src="https://via.placeholder.com/60" alt="Icon">
+                        <h5>Match Insights</h5>
+                        <p>Stay updated with match reviews, analyses, and predictions.</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col">
+                <a href="player_details.php" style="text-decoration: none;">
+                    <div class="highlight-card">
+                        <img src="https://via.placeholder.com/60" alt="Icon">
+                        <h5>Engaging Stories</h5>
+                        <p>Relive iconic moments and behind-the-scenes stories of legends.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
     </div>
+</div>
 
+
+    <!-- Footer -->
+    <?php include 'footer.php'; ?>
 </body>
 
-<?php include 'footer.php'; ?>
-
-  </footer>
-
 </html>
+<?php
+// Random player selection logic
+$stmt = $db->prepare("SELECT player_id FROM football_legends ORDER BY RAND() LIMIT 1");
+$stmt->execute();
+$randomPlayer = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($randomPlayer) {
+    $randomPlayerId = $randomPlayer['player_id'];
+    $randomPlayerLink = "player_details.php?id=$randomPlayerId";
+} else {
+    $randomPlayerLink = "#";
+}
+?>
+

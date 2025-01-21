@@ -36,7 +36,7 @@ include 'header.php';
                             <p class="text-justify mb-4">
                                 We hope you enjoy our content as much as we enjoy offering it to you. If you have any questions or comments, please don’t hesitate to contact us.
                             </p>
-                            <p class="text-center font-italic">Sincerely, The Football Legends Team</p>
+                            <p class="text-center font-italic">Sincerely, T.O Blog Team</p>
                         </div>
                     </div>
                 </div>
