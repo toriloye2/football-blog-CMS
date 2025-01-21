@@ -103,9 +103,12 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && !isset($_S
         }
 
         .highlight-card img {
-            max-width: 60px;
-            margin-bottom: 15px;
-        }
+    max-width: 300px; /* Increase the max-width */
+    max-height: 280px; /* Maintain proportional height */
+    margin-bottom: 15px;
+    object-fit: cover; /* Ensures the image scales properly */
+}
+
 
         .highlight-card h5 {
             font-size: 1.2rem;
@@ -145,7 +148,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && !isset($_S
             <div class="col">
                 <a href="players.php" style="text-decoration: none;">
                     <div class="highlight-card">
-                        <img src="https://via.placeholder.com/60" alt="Icon">
+                        <img src="images/leg.webp" alt="Icon">
                         <h5>100+ Legends</h5>
                         <p>Read profiles of the greatest footballers who made history.</p>
                     </div>
@@ -154,7 +157,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && !isset($_S
             <div class="col">
                 <a href="insights.php" style="text-decoration: none;">
                     <div class="highlight-card">
-                        <img src="https://via.placeholder.com/60" alt="Icon">
+                        <img src="images/tac1.webp" alt="Icon">
                         <h5>Match Insights</h5>
                         <p>Stay updated with match reviews, analyses, and predictions.</p>
                     </div>
@@ -163,7 +166,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && !isset($_S
             <div class="col">
                 <a href="player_details.php" style="text-decoration: none;">
                     <div class="highlight-card">
-                        <img src="https://via.placeholder.com/60" alt="Icon">
+                        <img src="images/treb new.png" alt="Icon">
                         <h5>Engaging Stories</h5>
                         <p>Relive iconic moments and behind-the-scenes stories of legends.</p>
                     </div>
