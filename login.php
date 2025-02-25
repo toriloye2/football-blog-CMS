@@ -2,18 +2,26 @@
 // Start the session
 session_start();
 
+// Include database connection
 require('connect.php');
+
+// Include header
 include 'header.php';
 
-$error = ""; // Initialize an error message variable
+// Initialize an error message variable
+if (!isset($_SESSION['error'])) {
+    $_SESSION['error'] = "";
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
-    $password = $_POST['password'];
+    $name = trim($_POST['name']);
+    $password = trim($_POST['password']);
 
-    // Basic validation for password length
-    if (strlen($password) < 8) {
-        $error = "Password must be at least 8 characters long.";
+    // Basic validation for empty fields
+    if (empty($name) || empty($password)) {
+        $_SESSION['error'] = "Both fields are required.";
+    } elseif (strlen($password) < 8) {
+        $_SESSION['error'] = "Password must be at least 8 characters long.";
     } else {
         try {
             // Prepare a select statement
@@ -30,38 +38,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($stmt->rowCount() == 1) {
                 // Fetch the user data
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $hashed_password = $row['password'];
 
                 // Verify the password
-                $hashed_password = $row['password'];
                 if (password_verify($password, $hashed_password)) {
                     // Store data in session variables
                     $_SESSION["loggedin"] = true;
                     $_SESSION["name"] = $row['name'];
                     $_SESSION["role"] = $row['role'];
-                    $_SESSION["user_id"] = $row['user_id']; // Correctly set user_id
+                    $_SESSION["user_id"] = $row['user_id'];
 
-                    // Redirect based on the role
+                    // Redirect based on role
                     if ($_SESSION["role"] == 1) {
-                        header("location: dashboard.php");
-                        exit(); // Ensure no further code execution after redirection
+                        header("Location: dashboard.php");
+                        exit();
                     } elseif ($_SESSION["role"] == 0) {
-                        header("location: index.php");
-                        exit(); // Ensure no further code execution after redirection
+                        header("Location: index.php");
+                        exit();
                     } else {
-                        $error = "Unknown role!";
+                        $_SESSION['error'] = "Unknown role!";
                     }
                 } else {
-                    $error = "Incorrect password. Please try again.";
+                    $_SESSION['error'] = "Incorrect password. Please try again.";
                 }
             } else {
-                $error = "Invalid username. Please try again.";
+                $_SESSION['error'] = "Invalid username. Please try again.";
             }
         } catch (PDOException $e) {
             // Log the error
             error_log("PDO Exception: " . $e->getMessage());
-            $error = "Oops! Something went wrong. Please try again later.";
+            $_SESSION['error'] = "Oops! Something went wrong. Please try again later.";
         }
     }
+
+    // Redirect to the same page to prevent resubmission issues
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 }
 ?>
 <!DOCTYPE html>
