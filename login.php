@@ -67,13 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<!-- Display the error message in login.php -->
-<?php
-if (isset($_SESSION['error'])) {
-    echo "<div class='error'>" . $_SESSION['error'] . "</div>";
-    unset($_SESSION['error']); // Remove the error after displaying it
-}
-?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -99,6 +93,12 @@ if (isset($_SESSION['error'])) {
                                     <div id="login">
                                         <h1 class="text-uppercase text-center mb-5">Login</h1>
 
+                                        <!-- Display error message -->
+                                        <?php if (!empty($error)): ?>
+                                            <div class="alert alert-danger text-center">
+                                                <?php echo htmlspecialchars($error); ?>
+                                            </div>
+                                        <?php endif; ?>
 
                                         <div class="form-outline mb-4">
                                             <label for="name" class="form-label">Name:</label>
@@ -108,16 +108,14 @@ if (isset($_SESSION['error'])) {
                                         <div class="form-outline mb-4">
                                             <label for="password" class="form-label">Password:</label>
                                             <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Enter your password" required>
-                                        <!-- Display error message -->
-                                        <?php if (!empty($error)): ?>
-                                            <div class="alert alert-danger text-center">
-                                                <?php echo htmlspecialchars($error); ?>
-                                            </div>
-                                        <?php endif; ?>
-
+                                      <!-- Display the error message in login.php -->
+<?php
+if (isset($_SESSION['error'])) {
+    echo "<div class='error'>" . $_SESSION['error'] . "</div>";
+    unset($_SESSION['error']); // Remove the error after displaying it
+}
+?>
                                         </div>
-
-
 
                                         <div class="d-flex justify-content-center">
                                             <button type="submit" value="Login" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Login</button>
