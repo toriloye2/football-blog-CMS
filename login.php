@@ -2,25 +2,15 @@
 // Start the session
 session_start();
 
-// Include database connection
 require('connect.php');
-
-// Include header
 include 'header.php';
 
-// Initialize an error message variable
-if (!isset($_SESSION['error'])) {
-    $_SESSION['error'] = "";
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = trim($_POST['name']);
-    $password = trim($_POST['password']);
+    $name = $_POST['name'];
+    $password = $_POST['password'];
 
-    // Basic validation for empty fields
-    if (empty($name) || empty($password)) {
-        $_SESSION['error'] = "Both fields are required.";
-    } elseif (strlen($password) < 8) {
+    // Basic validation for password length
+    if (strlen($password) < 8) {
         $_SESSION['error'] = "Password must be at least 8 characters long.";
     } else {
         try {
@@ -38,22 +28,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($stmt->rowCount() == 1) {
                 // Fetch the user data
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $hashed_password = $row['password'];
 
                 // Verify the password
+                $hashed_password = $row['password'];
                 if (password_verify($password, $hashed_password)) {
                     // Store data in session variables
                     $_SESSION["loggedin"] = true;
                     $_SESSION["name"] = $row['name'];
                     $_SESSION["role"] = $row['role'];
-                    $_SESSION["user_id"] = $row['user_id'];
+                    $_SESSION["user_id"] = $row['user_id']; // Correctly set user_id
 
-                    // Redirect based on role
+                    // Redirect based on the role
                     if ($_SESSION["role"] == 1) {
-                        header("Location: dashboard.php");
+                        header("location: dashboard.php");
                         exit();
                     } elseif ($_SESSION["role"] == 0) {
-                        header("Location: index.php");
+                        header("location: index.php");
                         exit();
                     } else {
                         $_SESSION['error'] = "Unknown role!";
@@ -71,11 +61,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Redirect to the same page to prevent resubmission issues
-    header("Location: " . $_SERVER['PHP_SELF']);
+    // Redirect back to the login page to display the error
+    header("location: login.php");
     exit();
 }
 ?>
+
+<!-- Display the error message in login.php -->
+<?php
+if (isset($_SESSION['error'])) {
+    echo "<div class='error'>" . $_SESSION['error'] . "</div>";
+    unset($_SESSION['error']); // Remove the error after displaying it
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
