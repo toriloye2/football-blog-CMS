@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         // $db is your PDO connection
-        $sql = "INSERT INTO user (name, email, password) VALUES (:name, :email, :password)";
+        $sql = "INSERT INTO "user" (name, email, password) VALUES (:name, :email, :password)";
         $stmt = $db->prepare($sql);
 
         // Hash the password before storing it in the database
