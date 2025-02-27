@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         try {
             // Prepare a select statement
-            $sql = "SELECT user_id, name, password, role FROM user WHERE name = :name";
+            $sql = "SELECT user_id, name, password, role FROM users WHERE name = :name";
             $stmt = $db->prepare($sql);
 
             // Bind variables to the prepared statement as parameters
