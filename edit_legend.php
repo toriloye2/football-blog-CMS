@@ -24,12 +24,12 @@ if (isset($_GET['id'])) {
     // Check if player exists
     if (!$legend) {
         $_SESSION['error'] = 'Football legend not found.';
-        header('Location: dashboard.php'); // Redirect to the legends listing page
+        header('Location: players.php'); // Redirect to the legends listing page
         exit();
     }
 } else {
     $_SESSION['error'] = 'Player ID not provided.';
-    header('Location: dashboard.php'); // Redirect to the legends listing page
+    header('Location: players.php'); // Redirect to the legends listing page
     exit();
 }
 
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($updateStmt->execute()) {
         $_SESSION['success'] = 'Football legend updated successfully.';
-        header('Location: dashboard.php'); // Redirect to the legends listing page
+        header('Location: players.php'); // Redirect to the legends listing page
         exit();
     } else {
         $_SESSION['error'] = 'Error updating football legend.';
