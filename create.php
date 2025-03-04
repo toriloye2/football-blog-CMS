@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute([$first_name, $last_name, $category_id, $goals, $appearances, $target_file]);
 
             // Redirect to the index page on success
-            header("Location: index.php");
+            header("Location: players.php");
             exit();
         } else {
             throw new Exception("Failed to upload the image.");
