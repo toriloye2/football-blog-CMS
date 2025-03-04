@@ -23,7 +23,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $_SESSION['error'] = "Invalid request";
 }
 
-header("Location: dashboard.php");
+header("Location: categories.php");
 exit();
 
 ?>

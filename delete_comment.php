@@ -29,6 +29,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 }
 
 // Redirect back to the dashboard
-header("location: dashboard.php");
+header("location: categories.php");
 exit();
 ?>

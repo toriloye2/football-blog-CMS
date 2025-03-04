@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($updateStmt->execute()) {
         $_SESSION['success'] = 'User Profile updated successfully.';
-        header('Location: dashboard.php'); // Redirect to the user listing page
+        header('Location: categories.php'); // Redirect to the user listing page
         exit();
     } else {
         $_SESSION['error'] = 'Error updating user.';
