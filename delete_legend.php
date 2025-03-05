@@ -23,10 +23,10 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $_SESSION['error'] = "Invalid request";
 }
 
-// Debugging: Check if session messages are being set
-echo "<pre>";
-print_r($_SESSION);
-echo "</pre>";
+// // Debugging: Check if session messages are being set
+// echo "<pre>";
+// print_r($_SESSION);
+// echo "</pre>";
 
 exit();
 ?>
