@@ -4,10 +4,7 @@ require('connect.php');
 include 'header.php';
 
 // Check if the user is logged in
-if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-    $welcomeMessage = "Welcome, " . htmlspecialchars($_SESSION["name"]) . "!";
-} else {
-    // Redirect to the login page if not logged in
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("Location: login.php");
     exit();
 }
@@ -22,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $category_id = htmlspecialchars($_POST["category_id"]);
         $goals = (int)$_POST["goals"];
         $appearances = (int)$_POST["appearances"];
+        $bio = htmlspecialchars($_POST["bio"]); // New bio field
         $image = $_FILES["image"]["name"];
 
         $target_dir = "images/";
@@ -42,12 +40,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $imageResizer->save($target_file);
 
             // Insert data into the database
-            $sql = "INSERT INTO football_legends (first_name, last_name, category_id, goals, appearances, images)
-                    VALUES (?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO football_legends (first_name, last_name, category_id, goals, appearances, bio, images)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $db->prepare($sql);
-            $stmt->execute([$first_name, $last_name, $category_id, $goals, $appearances, $target_file]);
+            $stmt->execute([$first_name, $last_name, $category_id, $goals, $appearances, $bio, $target_file]);
 
-            // Redirect to the index page on success
+            // Redirect to the players list page on success
+            $_SESSION['success'] = "Football legend added successfully!";
             header("Location: players.php");
             exit();
         } else {
@@ -126,6 +125,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="form-outline mb-4">
                                     <label for="appearances" class="form-label">Appearances</label>
                                     <input type="number" class="form-control form-control-lg" id="appearances" name="appearances" required>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label for="bio" class="form-label">Player Bio</label>
+                                    <textarea class="form-control form-control-lg" id="bio" name="bio" rows="4" required></textarea>
                                 </div>
 
                                 <div class="form-outline mb-4">

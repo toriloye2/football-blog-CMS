@@ -1,18 +1,17 @@
 <?php
 session_start();
-
-// Include the database connection file
 require('connect.php');
 include 'header.php';
 
-// Function to sanitize user input
-function sanitizeInput($input) {
-    return htmlspecialchars(strip_tags(trim($input)));
+// Check if the user is logged in
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("Location: login.php");
+    exit();
 }
 
-// Check if player ID is provided in the URL
-if (isset($_GET['id'])) {
-    $player_id = sanitizeInput($_GET['id']);
+// Check if player ID is provided
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $player_id = filter_var($_GET['id'], FILTER_VALIDATE_INT);
 
     // Fetch player data from the database
     $sql = "SELECT * FROM football_legends WHERE player_id = :player_id";
@@ -21,70 +20,69 @@ if (isset($_GET['id'])) {
     $stmt->execute();
     $legend = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Check if player exists
     if (!$legend) {
         $_SESSION['error'] = 'Football legend not found.';
-        header('Location: players.php'); // Redirect to the legends listing page
+        header('Location: players.php');
         exit();
     }
 } else {
     $_SESSION['error'] = 'Player ID not provided.';
-    header('Location: players.php'); // Redirect to the legends listing page
+    header('Location: players.php');
     exit();
 }
 
-// Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitize and validate input
-    $first_name = sanitizeInput($_POST['first_name']);
-    $last_name = sanitizeInput($_POST['last_name']);
-    $position = sanitizeInput($_POST['position']);
-    $bio = sanitizeInput($_POST['bio']); // Capture bio input
+// Handle form submission for updating the player
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    try {
+        $first_name = htmlspecialchars($_POST["first_name"]);
+        $last_name = htmlspecialchars($_POST["last_name"]);
+        $category_id = htmlspecialchars($_POST["category_id"]);
+        $goals = (int)$_POST["goals"];
+        $appearances = (int)$_POST["appearances"];
+        $bio = htmlspecialchars($_POST["bio"]); // New bio field
+        $image = $_FILES["image"]["name"];
+        $target_dir = "images/";
 
-    // Fetch category ID based on the selected position
-    $categorySql = "SELECT id FROM categories WHERE name = :position";
-    $categoryStmt = $db->prepare($categorySql);
-    $categoryStmt->bindParam(':position', $position, PDO::PARAM_STR);
-    $categoryStmt->execute();
-    $categoryResult = $categoryStmt->fetch(PDO::FETCH_ASSOC);
+        if (!empty($image)) {
+            $target_file = $target_dir . basename($image);
+            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+            $allowed_extensions = ["jpg", "jpeg", "png", "gif", "webp"];
 
-    if ($categoryResult && isset($categoryResult['id'])) {
-        $category_id = $categoryResult['id'];
-    } else {
-        $_SESSION['error'] = 'Invalid position selected.';
-        header('Location: edit_legend.php?id=' . $player_id);
+            if (!in_array($imageFileType, $allowed_extensions)) {
+                throw new Exception("Invalid file type. Only JPG, JPEG, PNG, GIF, and WEBP are allowed.");
+            }
+
+            // Upload and resize the image
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+                require 'vendor/autoload.php';
+                use Gumlet\ImageResize;
+                $imageResizer = new ImageResize($target_file);
+                $imageResizer->resizeToBestFit(300, 300);
+                $imageResizer->save($target_file);
+
+                // Update player with image
+                $sql = "UPDATE football_legends SET
+                            first_name = ?, last_name = ?, category_id = ?, goals = ?, appearances = ?, bio = ?, images = ?
+                        WHERE player_id = ?";
+                $stmt = $db->prepare($sql);
+                $stmt->execute([$first_name, $last_name, $category_id, $goals, $appearances, $bio, $target_file, $player_id]);
+            } else {
+                throw new Exception("Failed to upload the image.");
+            }
+        } else {
+            // Update player without changing the image
+            $sql = "UPDATE football_legends SET
+                        first_name = ?, last_name = ?, category_id = ?, goals = ?, appearances = ?, bio = ?
+                    WHERE player_id = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$first_name, $last_name, $category_id, $goals, $appearances, $bio, $player_id]);
+        }
+
+        $_SESSION['success'] = "Football legend updated successfully!";
+        header("Location: players.php");
         exit();
-    }
-
-    // Validate numerical inputs for goals and appearances
-    $goals = filter_var($_POST['goals'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) ?: 0;
-    $appearances = filter_var($_POST['appearances'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) ?: 0;
-
-    // Update player data in the database
-    $updateSql = "UPDATE football_legends
-                  SET first_name = :first_name,
-                      last_name = :last_name,
-                      category_id = :category_id,
-                      goals = :goals,
-                      appearances = :appearances,
-                      bio = :bio
-                  WHERE player_id = :player_id";
-
-    $updateStmt = $db->prepare($updateSql);
-    $updateStmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
-    $updateStmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
-    $updateStmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
-    $updateStmt->bindParam(':goals', $goals, PDO::PARAM_INT);
-    $updateStmt->bindParam(':appearances', $appearances, PDO::PARAM_INT);
-    $updateStmt->bindParam(':bio', $bio, PDO::PARAM_STR);
-    $updateStmt->bindParam(':player_id', $player_id, PDO::PARAM_INT);
-
-    if ($updateStmt->execute()) {
-        $_SESSION['success'] = 'Football legend updated successfully.';
-        header('Location: players.php'); // Redirect to the legends listing page
-        exit();
-    } else {
-        $_SESSION['error'] = 'Error updating football legend.';
+    } catch (Exception $e) {
+        $errorMessage = $e->getMessage();
     }
 }
 ?>
@@ -94,59 +92,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>Edit Football Legend</title>
 </head>
+
 <body>
-    <div class="container mt-5">
-        <h2>Edit Football Legend</h2>
+<section class="vh-100 bg-image" style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp');">
+    <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+        <div class="container h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                    <div class="card" style="border-radius: 15px;">
+                        <div class="card-body p-5">
+                            <?php if (isset($errorMessage)): ?>
+                                <div class="alert alert-danger">
+                                    <?php echo htmlspecialchars($errorMessage); ?>
+                                </div>
+                            <?php endif; ?>
 
-        <?php if (isset($_SESSION['error'])) : ?>
-            <div class="alert alert-danger">
-                <?php echo $_SESSION['error']; ?>
+                            <form method="post" enctype="multipart/form-data">
+                                <h1 class="text-uppercase text-center mb-5">Edit Player</h1>
+
+                                <div class="form-outline mb-4">
+                                    <label for="first_name" class="form-label">First Name</label>
+                                    <input type="text" class="form-control form-control-lg" id="first_name" name="first_name" value="<?php echo htmlspecialchars($legend['first_name']); ?>" required>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control form-control-lg" id="last_name" name="last_name" value="<?php echo htmlspecialchars($legend['last_name']); ?>" required>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label for="category_id" class="form-label">Position</label>
+                                    <select class="form-control form-control-lg" name="category_id" required>
+                                        <?php
+                                        try {
+                                            $sql = "SELECT * FROM categories";
+                                            $stmt = $db->query($sql);
+                                            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                            foreach ($categories as $row) {
+                                                $selected = ($legend['category_id'] == $row['id']) ? "selected" : "";
+                                                echo "<option value='" . htmlspecialchars($row['id']) . "' $selected>" . htmlspecialchars($row['position']) . "</option>";
+                                            }
+                                        } catch (PDOException $e) {
+                                            echo "<option disabled>Error loading positions</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label for="goals" class="form-label">Goals</label>
+                                    <input type="number" class="form-control form-control-lg" id="goals" name="goals" value="<?php echo htmlspecialchars($legend['goals']); ?>" required>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label for="appearances" class="form-label">Appearances</label>
+                                    <input type="number" class="form-control form-control-lg" id="appearances" name="appearances" value="<?php echo htmlspecialchars($legend['appearances']); ?>" required>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label for="bio" class="form-label">Player Bio</label>
+                                    <textarea class="form-control form-control-lg" id="bio" name="bio" rows="4" required><?php echo htmlspecialchars($legend['bio']); ?></textarea>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label for="image" class="form-label">Upload New Image (optional)</label>
+                                    <input type="file" name="image" id="image" class="form-control" accept="image/*">
+                                </div>
+
+                                <div class="d-flex justify-content-center">
+                                    <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <?php unset($_SESSION['error']); ?>
-        <?php endif; ?>
-
-        <form id="editForm" method="post" action="">
-            <div class="mb-3">
-                <label for="first_name" class="form-label">First Name</label>
-                <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo htmlspecialchars($legend['first_name']); ?>" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="last_name" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="last_name" name="last_name" value="<?php echo htmlspecialchars($legend['last_name']); ?>" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="bio" class="form-label">Bio</label>
-                <textarea class="form-control" id="bio" name="bio" rows="4"><?php echo htmlspecialchars($legend['bio'] ?? ''); ?></textarea>
-            </div>
-
-            <div class="form-outline mb-4">
-                <label for="position" class="form-label">Position:</label>
-                <select class="form-control form-control-lg" id="position" name="position" required>
-                    <option value="">Select a position</option>
-                    <option value="goalkeeper">Goalkeeper</option>
-                    <option value="defender">Defender</option>
-                    <option value="midfielder">Midfielder</option>
-                    <option value="forward">Forward</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="goals" class="form-label">Goals</label>
-                <input type="number" class="form-control" id="goals" name="goals" value="<?php echo $legend['goals']; ?>" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="appearances" class="form-label">Appearances</label>
-                <input type="number" class="form-control" id="appearances" name="appearances" value="<?php echo $legend['appearances']; ?>" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Update Football Legend</button>
-        </form>
+        </div>
     </div>
-</body>
+</section>
 <?php include 'footer.php'; ?>
+</body>
 </html>
